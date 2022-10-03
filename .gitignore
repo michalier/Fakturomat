@@ -1,0 +1,4 @@
+*.wz
+*.faktura
+/out/
+/Manager.txt

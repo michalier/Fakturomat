@@ -1,6 +1,5 @@
 package Fakturomat.Windows;
 
-import Fakturomat.Pair;
 import Fakturomat.Data.BaseData;
 import Fakturomat.Data.WZData;
 import Fakturomat.Fakturomat;
@@ -18,6 +17,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
 import java.time.LocalDate;
+import java.util.Locale;
 
 public class WZAction extends AbstractAction {
     private final Fakturomat fakturomat;
@@ -85,6 +85,7 @@ public class WZAction extends AbstractAction {
         // ===================================================
 
         DatePicker datePicker = new DatePicker();
+        datePicker.setLocale(new Locale("pl"));
         datePicker.setDate(LocalDate.now());
         rightPanel.add(datePicker);
 
@@ -129,7 +130,10 @@ public class WZAction extends AbstractAction {
         index[0] = 0;
 
         if (edit) {
-            data.wares.forEach((w, s) -> {
+            data.wares.forEach((p) -> {
+                Ware w = p.getKey();
+                String s = p.getValue();
+
                 BaseWarePanel warePanel;
 
                 if (fakturomat.manager.wares.contains(w)) {
@@ -205,11 +209,7 @@ public class WZAction extends AbstractAction {
 
                 data.buyer = (Contractor) contractorBox.getSelectedItem();
 
-                scrolledPanel.panels.forEach(bp -> {
-                    Pair<Ware, String> value = bp.getValue();
-
-                    data.wares.put(value.getKey(), value.getValue());
-                });
+                scrolledPanel.panels.forEach(bp -> data.wares.add(bp.getValue()));
 
                 data.dataWystawienia = datePicker.getDate();
 
@@ -217,7 +217,7 @@ public class WZAction extends AbstractAction {
 
                 String numer = fakturomat.manager.numberFormat;
                 numer = numer.replaceAll("Numer",   (ostatni < 10 ? "0" : "") + ostatni);
-                numer = numer.replaceAll("Miesiąc", (data.dataWystawienia.getMonthValue() < 9 ? "0" : "") + (data.dataWystawienia.getMonthValue()));
+                numer = numer.replaceAll("Miesiąc", (data.dataWystawienia.getMonthValue() < 10 ? "0" : "") + (data.dataWystawienia.getMonthValue()));
                 numer = numer.replaceAll("Rok",                Integer.toString(data.dataWystawienia.getYear()));
 
                 data.number = numer;

@@ -5,7 +5,6 @@ import Fakturomat.Fakturomat;
 import Fakturomat.NumberFilter;
 import Fakturomat.Inputs.*;
 import Fakturomat.Panels.*;
-import Fakturomat.Pair;
 import com.github.lgooddatepicker.components.DatePicker;
 
 import javax.swing.*;
@@ -15,6 +14,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
 import java.time.temporal.ChronoUnit;
+import java.util.Locale;
 import java.util.Objects;
 
 public class InvoiceAction extends AbstractAction {
@@ -130,6 +130,8 @@ public class InvoiceAction extends AbstractAction {
         pnl2l.add(dateLabel1);
 
         DatePicker date1 = new DatePicker();
+        date1.setLocale(new Locale("pl"));
+
         if (edit) {
             if (wzData == null) {
                 assert data != null;
@@ -151,6 +153,7 @@ public class InvoiceAction extends AbstractAction {
         pnl2r.add(dateLabel2);
 
         DatePicker date2 = new DatePicker();
+        date2.setLocale(new Locale("pl"));
         if (edit) {
             if (wzData == null) {
                 assert data != null;
@@ -204,11 +207,11 @@ public class InvoiceAction extends AbstractAction {
         pnl3r.setPreferredSize(new Dimension(260, 30));
 
         JLabel paymentDateLabel = new JLabel();
-        paymentDateLabel.setText("Termin");
+        paymentDateLabel.setText("Termin (dni)");
         pnl3r.add(paymentDateLabel);
 
         JTextField paymentDueAmount = new JTextField();
-        paymentDueAmount.setPreferredSize(new Dimension(80, 28));
+        paymentDueAmount.setPreferredSize(new Dimension(50, 28));
         paymentDueAmount.addKeyListener(new NumberFilter());
 
         if (edit) {
@@ -217,6 +220,10 @@ public class InvoiceAction extends AbstractAction {
                 paymentDueAmount.setText(String.valueOf(ChronoUnit.DAYS.between(data.dataWystawienia,
                                                                                 ((InvoiceData) data).paymentDeadline)));
             }
+        }
+        else
+        {
+            paymentDueAmount.setText("30");
         }
 
         pnl3r.add(paymentDueAmount);
@@ -244,7 +251,10 @@ public class InvoiceAction extends AbstractAction {
         index[0] = 0;
 
         if (edit) {
-            Objects.requireNonNullElse(wzData, data).wares.forEach((w, s) -> {
+            Objects.requireNonNullElse(wzData, data).wares.forEach((p) -> {
+                Ware w = p.getKey();
+                String s = p.getValue();
+
                 BaseWarePanel warePanel;
 
                 if (fakturomat.manager.wares.contains(w)) {
@@ -323,11 +333,7 @@ public class InvoiceAction extends AbstractAction {
 
                 invoiceData.buyer = (Contractor) contractorBox.getSelectedItem();
 
-                scrolledPanel.panels.forEach(bp -> {
-                    Pair<Ware, String> value = bp.getValue();
-
-                    invoiceData.wares.put(value.getKey(), value.getValue());
-                });
+                scrolledPanel.panels.forEach(bp -> invoiceData.wares.add(bp.getValue()));
 
                 invoiceData.dataWydania = date1.getDate();
                 invoiceData.dataWystawienia = date2.getDate();

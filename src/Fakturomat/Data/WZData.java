@@ -2,18 +2,19 @@ package Fakturomat.Data;
 
 import Fakturomat.Inputs.Contractor;
 import Fakturomat.Inputs.Ware;
+import Fakturomat.Pair;
 
 import java.awt.*;
 import java.io.*;
 import java.time.LocalDate;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 // szerokosc a4 595
 // wysokosc  a4 841
 
 public class WZData extends BaseData implements Serializable {
-    public WZData() { this.wares = new HashMap<>(); }
+    public WZData() { this.wares = new ArrayList<>(); }
 
     private void generateGraphics(Graphics graphics, int y, boolean clear) {
         if (clear) {
@@ -35,7 +36,10 @@ public class WZData extends BaseData implements Serializable {
         AtomicInteger i = new AtomicInteger(1);
         AtomicInteger ddy = new AtomicInteger(dy);
 
-        this.wares.forEach((w, s) -> {
+        this.wares.forEach((p) -> {
+            Ware w = p.getKey();
+            String s = p.getValue();
+
             graphics.drawString(i.getAndIncrement() + ".", 30, ddy.get());
             graphics.drawString(w.name.replaceAll("~", " "), 45, ddy.get());
 
@@ -90,7 +94,7 @@ public class WZData extends BaseData implements Serializable {
         buyer = (Contractor) ois.readObject();
         seller = (Contractor) ois.readObject();
         number = (String) ois.readObject();
-        wares = (HashMap<Ware, String>) ois.readObject();
+        wares = (ArrayList<Pair<Ware, String>>) ois.readObject();
         dataWystawienia = (LocalDate) ois.readObject();
     }
 

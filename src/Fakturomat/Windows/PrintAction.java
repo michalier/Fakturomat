@@ -15,23 +15,27 @@ public class PrintAction extends AbstractAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        PrinterJob pj = PrinterJob.getPrinterJob();
+        if (fakturomat.data != null) {
+            PrinterJob pj = PrinterJob.getPrinterJob();
 
-        pj.setPrintable((graphics, pageFormat, pageIndex) -> {
-            if (pageIndex != 0)
-                return Printable.NO_SUCH_PAGE;
+            pj.setJobName(fakturomat.data.number);
 
-            fakturomat.data.drawGraphics(graphics);
+            pj.setPrintable((graphics, pageFormat, pageIndex) -> {
+                if (pageIndex != 0)
+                    return Printable.NO_SUCH_PAGE;
 
-            return Printable.PAGE_EXISTS;
-        });
+                fakturomat.data.drawGraphics(graphics);
 
-        if (pj.printDialog()) {
-            try {
-                pj.print();
-            }
-            catch (PrinterException exc) {
-                exc.printStackTrace();
+                return Printable.PAGE_EXISTS;
+            });
+
+
+            if (pj.printDialog()) {
+                try {
+                    pj.print();
+                } catch (PrinterException exc) {
+                    exc.printStackTrace();
+                }
             }
         }
     }

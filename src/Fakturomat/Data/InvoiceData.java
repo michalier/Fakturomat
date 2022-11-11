@@ -2,6 +2,7 @@ package Fakturomat.Data;
 
 import Fakturomat.Inputs.Contractor;
 import Fakturomat.Inputs.Ware;
+import Fakturomat.Pair;
 import Fakturomat.TextDrawer;
 
 import java.awt.*;
@@ -11,10 +12,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serial;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -50,7 +48,7 @@ public class InvoiceData extends BaseData {
         }
     }
 
-    public InvoiceData() { this.wares = new HashMap<>(); }
+    public InvoiceData() { this.wares = new ArrayList<>(); }
 
     @Serial
     private void writeObject(ObjectOutputStream oos) throws IOException {
@@ -63,6 +61,7 @@ public class InvoiceData extends BaseData {
         oos.writeObject(dataWydania);
         oos.writeObject(paymentDeadline);
         oos.writeObject(paymentMethod);
+        oos.writeObject(bankName);
     }
 
     @Serial
@@ -72,11 +71,12 @@ public class InvoiceData extends BaseData {
         seller = (Contractor) ois.readObject();
         number = (String) ois.readObject();
         wzNumber = (String) ois.readObject();
-        wares = (HashMap<Ware, String>) ois.readObject();
+        wares = (ArrayList<Pair<Ware, String>>) ois.readObject();
         dataWystawienia = (LocalDate) ois.readObject();
         dataWydania = (LocalDate) ois.readObject();
         paymentDeadline = (LocalDate) ois.readObject();
         paymentMethod = (String) ois.readObject();
+        bankName = (String) ois.readObject();
     }
 
     @Override
@@ -95,6 +95,7 @@ public class InvoiceData extends BaseData {
         int fontSize = graphics.getFontMetrics().getHeight();
 
         int rowHeight = fontSize * 2;
+
 
         // ===================================================
 
@@ -132,6 +133,8 @@ public class InvoiceData extends BaseData {
 
         TextDrawer.drawMultiline(graphics, nabywca, TextDrawer.Alignment.Left, 350, 70 + fontSize, 0);
 
+
+
         // ===================================================
 
         int dy = 154 + graphics.getFontMetrics().getHeight();
@@ -167,8 +170,8 @@ public class InvoiceData extends BaseData {
 
         graphics.setStroke(new BasicStroke(1));
 
-        wares.forEach((w, s) -> {
-            int h = drawRow(graphics, w, s, ai.get(), nr.getAndIncrement(), subtotals);
+        wares.forEach((p) -> {
+            int h = drawRow(graphics, p.getKey(), p.getValue(), ai.get(), nr.getAndIncrement(), subtotals);
             ai.accumulateAndGet(h, Integer::sum);
         });
 

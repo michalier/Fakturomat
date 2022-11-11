@@ -17,7 +17,11 @@ public class GraphicsPanel extends JPanel {
 
     @Override
     protected void paintComponent(Graphics g) {
-        if (data.data != null) {
+        if (data.data == null) {
+            g.setColor(Color.WHITE);
+            g.fillRect(0, 0, 600, 900);
+            g.setColor(Color.BLACK);
+        } else {
             data.data.drawGraphics(g);
         }
     }

@@ -92,7 +92,20 @@ public class Fakturomat extends JFrame {
 
         bottomPanel.add(printButton);
 
+        JButton clearButton = new JButton("Wyczyść");
+        clearButton.setPreferredSize(new Dimension(80, 30));
+        clearButton.addActionListener(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Fakturomat.this.data = null;
+                Fakturomat.this.graphicsPanel.redraw();
+            }
+        });
+
+        bottomPanel.add(clearButton);
+
         add(bottomPanel);
+
 
         // ===================================================
 
